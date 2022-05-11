@@ -1,0 +1,204 @@
+---
+title: "Paper or Download?"
+author: "Guadalupe Woods"
+date: "Spring 2022"
+output: html_document
+---
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, include = FALSE)
+```
+## Introduction
+
+For some people, books are only a painful requirement, while for others, books are dear old friends they revisit while also starting new friendships.  
+People buy books for several reasons: learning, entertainment, and in general to fill different needs.  
+Whatever the point of view or reason, people do purchase books, and in these times, Amazon is the main marketplace to buy them online.  
+This project takes a look at data from Amazon's top 50 bestselling books between the years of 2009 up to early 2022, with the purpose of pointing at anything significant if detected, and in general, to describe what the dataset shows.  
+
+## Data and Preparation  
+  
+#### Data Used  
+
+Dataset: [**"Amazon's Top 50 Bestselling Books 2009 - 2022"**](https://www.kaggle.com/datasets/chriskachmar/amazon-top-50-bestselling-books-2009-2022)  
+Source: [kaggle.com](kaggle.com)  
+Owner: [Chris Kachmar](https://www.kaggle.com/chriskachmar)  
+  
+#### Metadata  
+
+Columns/Variables:  
+
+- **Name**: Book title.  
+- **Author**: Book author's first and last name.  
+- **User.Rating**: Average user rating(out of 5 stars, 0.0 - 5.0).
+- **Reviews**: Number of reviews.   
+- **Price**: Rounded(whole numbers).  
+- **Year**: Year that the title made it to the top 50 bestselling list.  
+- **Genre**: Book type(fiction/non-fiction).  
+  
+Rows/Observations:  
+
+- 700 rows.
+  
+#### Libraries Used
+
+- tidyverse
+- ggplot2
+  
+```{r Libraries, echo=TRUE}
+
+# Libraries used:
+library(tidyverse)
+library(ggplot2)
+
+```  
+
+
+```{r, echo=TRUE, include=TRUE}
+
+# Assigning the dataset file to variable books_data:
+books_data <- read.csv("bestsellers_with_categories_2022_03_27.csv")
+
+# Taking a glimpse at the data.
+glimpse(books_data)
+
+```
+
+#### Data Preparation
+  
+- Completeness.  
+The data was complete, with no missing pieces of data.  
+  
+- Accuracy:  
+User ratings, reviews and price, are as of data collection time, not as of sale year.  
+  
+- Tidiness.  
+The only problem with the data was that some of the titles were either incomplete, or they were incomplete plus they had unnecessary characters as part of the titles. After researching for the correct names, each one of those titles were assigned the accurate name. No other problematic issue was detected with the data.  
+  
+Tidying data:  
+```{r Data_Prep, echo=TRUE, include=TRUE}
+
+# The following ones were incomplete in the name or the name included incorrect characters.
+books_data$Name[7] <- "Divine Soul Mind Body Healing and Transmission System Special Edition: The Divine Way to Heal You, Humanity, Mother Earth, and All Universes"
+
+books_data$Name[131] <- "The China Study: Revised and Expanded Edition: The Most Comprehensive Study of Nutrition Ever Conducted and the Startling Implications for Diet, Weight Loss, and Long-Term Health"
+
+books_data$Name[230] <- "Soul Healing Miracles: Ancient and New Sacred Wisdom, Knowledge, and Practical Techniques for Healing the Spiritual, Mental, Emotional, and Physical Bodies"
+
+books_data$Name[314] <- "Enchanted Forest: An Inky Quest and Coloring book (Activity Books, Mindfulness and Meditation, Illustrated Floral Prints)"
+
+books_data$Name[343] <- "The Pioneer Woman Cooks: Dinnertime - Comfort Classics, Freezer Food, 16-minute Meals, and Other Delicious Ways to Solve Supper"
+
+books_data$Name[379] <- "Pokemon Deluxe Essential Handbook: The Need-to-Know Stats and Facts on Over 700 Pokemon"
+
+books_data$Name[470] <- "Instant Pot Pressure Cooker Cookbook: 500 Everyday Recipes for Beginners and Advanced Users. Try Easy and Healthy Instant Pot Recipes"
+
+books_data$Name[472] <- "Last Week Tonight with John Oliver Presents A Day in the Life of Marlon Bundo (Better Bundo Book, LGBT Children’s Book)"
+
+books_data$Name[483] <- "School Zone - Big Preschool Workbook - Ages 4 and Up, Colors, Shapes, Numbers 1-10, Alphabet, Pre-Writing, Pre-Reading, Phonics, and More (School Zone Big Workbook Series)"
+
+books_data$Name[520] <- "Instant Pot Pressure Cooker Cookbook: 500 Everyday Recipes for Beginners and Advanced Users. Try Easy and Healthy Instant Pot Recipes"
+
+books_data$Name[528] <- "School Zone - Big Preschool Workbook - Ages 4 and Up, Colors, Shapes, Numbers 1-10, Alphabet, Pre-Writing, Pre-Reading, Phonics, and More (School Zone Big Workbook Series)"
+
+books_data$Name[540] <- "The Unofficial Harry Potter Cookbook: From Cauldron Cakes to Knickerbocker Glory--More Than 150 Magical Recipes for Wizards and Non-Wizards Alike (Unofficial Cookbook)"
+
+books_data$Name[624] <- "Oh, the Places You'll Go!"
+
+books_data$Name[641] <- "The Real Anthony Fauci: Bill Gates, Big Pharma, and the Global War on Democracy and Public Health (Children’s Health Defense)"
+
+books_data$Name[691] <- "The Real Anthony Fauci: Bill Gates, Big Pharma, and the Global War on Democracy and Public Health (Children’s Health Defense)"
+
+# ReNamed the following ones properly after noticing naming mistakes while sorting by price == 0.
+
+# Jeff Kinney's "Diary of a ..." books go by the new name first and then the "Diary of a..." part.
+books_data$Name[206] <- "Hard Luck (Diary of a Wimpy Kid #8)"
+
+# Incomplete name, found full name in amazon
+books_data$Name[266] <- "Journey to the Ice Palace"
+
+# Incomplete name, found full name in amazon
+books_data$Name[433] <- "The Getaway (Diary of a Wimpy Kid, Book 12)"
+
+```
+
+## Exploratory Data Analysis, Visualization and Conclusions.
+
+#### Questions about the data.  
+
+- Is there an overall preference between fiction vs. non-fiction?  
+- Does higher user rating indicate an specific genre?  
+- How have the genres been doing during the pandemic?
+- What does price vs. user ratings indicate?  
+
+#### Data visualization  
+
+Is there any preference between Fiction vs. Non-Fiction overall?  
+  
+```{r EDA}
+ggplot(books_data, aes(Genre)) + 
+  geom_bar(fill = "medium blue")
+```
+
+Does higher user rating indicate specific genre?  
+  
+With a boxplot:  
+
+```{r, include=TRUE, echo=TRUE}
+
+ggplot(books_data, aes(Genre, User.Rating, fill = Genre)) + 
+  geom_boxplot()
+
+```
+  
+With an overlaid density plot:  
+
+```{r, include=TRUE, echo=TRUE}
+
+ggplot(books_data, aes(x = User.Rating, col = Genre)) + 
+  geom_density()
+
+```  
+  
+Did any of the genres sell more during the  pandemic?  
+
+With a boxplot:  
+
+```{r, include=TRUE, echo=TRUE}
+
+ggplot(books_data, aes(ymin = 2020)) + 
+  geom_boxplot(aes(x = Genre, y = Year, ymin = 2020, fill = Genre))
+  
+```  
+  
+With an overlaid density plot:  
+
+```{r, include=TRUE, echo=TRUE}
+# Trying with an overlaid density plot
+ggplot(books_data, aes(x = Year, col = Genre)) + 
+  geom_density()
+
+```  
+  
+What does Price vs. User Ratings indicate?  
+
+```{r, include=TRUE, echo=TRUE}
+
+ggplot(books_data, aes(x = User.Rating, y = Price, color = Genre)) + 
+  geom_point()
+
+```  
+  
+#### Summary  
+  
+
+- The dataset is small.  
+- There is only one categorical variable.  
+- There is a clear preference for Non-fiction titles in the data.
+- Higher ratings seem to show different genre behaviors.
+- There is some indication of fluctuation since the pandemic started.
+- A higher user rating might have some effect on price.
+
+
+
+```{r Summary}
+
+```
